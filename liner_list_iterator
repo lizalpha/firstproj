@@ -1,0 +1,119 @@
+#ifndef _CHAIN_H_
+#define _CHAIN_H_
+ 
+#include <iostream>
+using namespace std;
+ 
+template <class T>
+class Chain;
+template <class T>
+class ChainIterator;
+ 
+template <class T>
+class ChainNode{
+    friend Chain<T>;//把node声明为public与之的区别
+    friend ChainIterator<T>;
+private:
+    T data;
+    ChainNode<T> *link;
+};
+template <class T>
+class Chain{
+public:
+    friend ChainIterator<T>;
+    Chain():first(NULL){}
+    ~Chain();
+    bool isEmpty(){return first == NULL;}
+    int Length();
+    bool Find(int k, T& x) const;
+    int Search(const T& x) const;
+    Chain<T>& Delete(int k, T& x);
+    Chain<T>& Insert(const T& x);
+    void Output(ostream &out) const;
+    void print() const;//temp function
+private:
+    ChainNode<T>* first;
+};
+template <class T>
+class ChainIterator{
+public:
+    T* Initialize(Chain<T>& c)
+    {
+        location = c.first;
+        if(location) return &location->data;
+        return NULL;
+    }
+    T* next()
+    {
+        if (!location) return NULL;
+        location = location->link;
+        if(location) return &(location->data);
+        return NULL;
+    }
+private:
+    ChainNode<T> *location;
+};
+template <class T>
+Chain<T>::~Chain()
+{
+    ChainNode<T> *tmp = first;
+    while(tmp){
+        tmp = first->link;
+        delete first;
+        first = tmp;
+    }
+}
+template <class T>
+int Chain<T>::Length()
+{
+    ChainNode<T> *current = first;
+    int count = 0;
+    while(current){
+        ++count;
+        current = current->link;
+    }
+    return count;
+}
+template <class T>
+int Chain<T>::Search(const T& x) const
+{
+    ChainNode<T> *current = first;
+    int index = 0;
+    while(current && x != current->data){
+        current = current->link;
+        ++index;
+    }
+    if(current)
+        return index;
+    return -1;
+}
+template <class T>
+void Chain<T>::Output(ostream &out) const
+{
+    ChainNode<T> *current = first;
+    while(current){
+        out << current->data << "  ";
+        current = current->link;
+    }
+}
+template <class T>
+Chain<T> &Chain<T>::Insert(const T &x)
+{
+    ChainNode<T> *tmp = first;
+    ChainNode<T> *p = new ChainNode<T>();
+    p->data = x;
+    p->link = first;
+    first = p;
+    return *this;
+}
+template <class T>
+void Chain<T>::print() const
+{
+    ChainNode<T> *p = first;
+    while(p){
+        cout << p->data << "  ";
+        p = p->link;
+    }
+    cout << endl;
+}
+#endif
